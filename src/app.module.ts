@@ -15,9 +15,11 @@ import { AppController } from './app.controller';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      useFactory: async (configService: ConfigService) => ({
-        ...(configService.getDatabaseCfg() as object)
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const config = configService.getDatabaseCfg();
+        console.log({config});
+        return config as object;
+      },
       inject: [ConfigService],
       imports: [ConfigModule],
     }),

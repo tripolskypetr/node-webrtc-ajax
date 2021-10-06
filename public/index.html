@@ -1,1 +1,44 @@
-<p>hello world</p>
+<div id="root"></div>
+<script>
+    (async function() {
+
+        const root = document.querySelector('#root');
+
+        const sleep = (timeout = 1000) => new Promise((res) => setTimeout(() => res(), timeout));
+
+        const createVideo = (stream) => {
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            root.appendChild(video);
+            video.play();
+        };
+
+        const request = async (url, params = {}) => {
+            const builder = new URL(url, location.origin);
+            Object.entries(params).forEach(([k, v]) => builder.searchParams.set(k, v));
+            await fetch(builder.toString());
+        };
+
+        const currentStream = await navigator.mediaDevices.getUserMedia({ video: { 
+            facingMode: 'user',
+            width: { min: 0, max: window.screen.width },
+            height: { min: 0, max: window.screen.height },
+        }});
+
+        createVideo(currentStream);
+
+        const currentUserId = await request('api/join-room');
+
+        console.log(`Joined as user-${currentUserId}`);
+
+        const process = async () => {
+            while (true) {
+                //
+                await sleep();
+            }
+        };
+
+        process();
+
+    })();
+</script>

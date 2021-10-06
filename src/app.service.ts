@@ -16,7 +16,7 @@ export class AppService {
     };
 
     joinRoom() {
-        const newId = Math.max(...this.userIds) + 1;
+        const newId = Math.max(...this.userIds, -1) + 1;
         this.userIds.push(newId);
         return newId;
     };
