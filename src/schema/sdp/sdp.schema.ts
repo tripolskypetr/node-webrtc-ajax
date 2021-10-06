@@ -2,6 +2,9 @@ import { Column, Entity, Index } from "typeorm";
 
 import { SdpType } from "./sdp-type.enum";
 
+/**
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/RTCSessionDescription/toJSON
+ */
 @Index([
   'roomId',
   'fromUserId',
@@ -22,10 +25,15 @@ export class SessionDescriptionProtocol {
   })
   fromUserId: number;
 
+  /**
+   * @see https://doc-kurento.readthedocs.io/en/stable/tutorials/java/tutorial-recorder.html
+   * @description null
+   */
   @Column({
     type: "number",
+    nullable: true,
   })
-  toUserId: number;
+  toUserId: number | null;
 
 
   @Column({
@@ -33,12 +41,13 @@ export class SessionDescriptionProtocol {
     enum: SdpType,
     nullable: true,
   })
-  type: string;
+  type: string | null;
 
   @Column({
     type: "string",
+    nullable: true,
   })
-  sdp: string;
+  sdp: string | null;
 
 
   @Column({

@@ -1,5 +1,8 @@
 import { Column, Entity, Index } from "typeorm";
 
+/**
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/RTCIceCandidate/toJSON
+ */
 @Index([
   'roomId',
   'fromUserId',
@@ -20,10 +23,15 @@ export class InformationConnectivityEstablishment {
   })
   fromUserId: number;
 
+  /**
+   * @see https://doc-kurento.readthedocs.io/en/stable/tutorials/java/tutorial-recorder.html
+   * @description null
+   */
   @Column({
     type: "number",
+    nullable: true,
   })
-  toUserId: number;
+  toUserId: number | null;
 
 
   @Column({
@@ -39,10 +47,10 @@ export class InformationConnectivityEstablishment {
   sdpMid: string;
 
   @Column({
-    type: "string",
+    type: "number",
     nullable: true,
   })
-  sdpMLineIndex: string;
+  sdpMLineIndex: number;
 
   @Column({
     type: "string",

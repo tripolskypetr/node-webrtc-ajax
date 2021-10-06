@@ -8,16 +8,16 @@ import { InformationConnectivityEstablishment as Ice } from './ice.schema';
 export class IceService {
 
     constructor(
-        @InjectRepository(Ice) private sdpRepository: Repository<Ice>,
+        @InjectRepository(Ice) private iceRepository: Repository<Ice>,
     ) { }
 
     async create(sdp: Ice): Promise<Ice> {
-        const target = this.sdpRepository.create(sdp);
-        return this.sdpRepository.save(target);
+        const target = this.iceRepository.create(sdp);
+        return this.iceRepository.save(target);
     };
 
     async readPending(roomId: number, toUserId: number): Promise<Ice[]> {
-        const target = await this.sdpRepository.find({
+        const target = await this.iceRepository.find({
             roomId,
             toUserId,
             recieved: false,
@@ -26,7 +26,7 @@ export class IceService {
     };
 
     async mark(roomId: number, fromUserId: number, toUserId: number): Promise<Ice> {
-        const target = await this.sdpRepository.preload({
+        const target = await this.iceRepository.preload({
             recieved: true,
             roomId,
             fromUserId,
