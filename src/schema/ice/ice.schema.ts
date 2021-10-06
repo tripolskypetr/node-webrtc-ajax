@@ -42,25 +42,25 @@ export class InformationConnectivityEstablishment {
     type: "text",
     nullable: true,
   })
-  candidate: string;
+  candidate: string | null;
 
   @Column({
     type: "text",
     nullable: true,
   })
-  sdpMid: string;
+  sdpMid: string | null;
 
   @Column({
     type: "int",
     nullable: true,
   })
-  sdpMLineIndex: number;
+  sdpMLineIndex: number | null;
 
   @Column({
     type: "text",
     nullable: true,
   })
-  usernameFragment: string;
+  usernameFragment: string | null;
 
 
   @Column({

@@ -28,7 +28,7 @@ class PeerToPeer extends EventEmitter {
         fromUserId = -1,
         toUserId = -1,
     }) {
-        this.connection = new RTCPeerConnection(/* ICE_SERVERS */);
+        this.connection = new RTCPeerConnection(/* ICE_SERVERS TURN */);
         this.connection.onicecandidate = (event) => {
             const { candidate: ice } = event;
             if (ice) {
