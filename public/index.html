@@ -1,8 +1,10 @@
 <div id="root"></div>
+<script src="./peer-to-peer.js"></script>
 <script>
     (async function() {
 
         const root = document.querySelector('#root');
+        const peerHub = new Map();
 
         const sleep = (timeout = 1000) => new Promise((res) => setTimeout(() => res(), timeout));
 
@@ -13,32 +15,45 @@
             video.play();
         };
 
-        const request = async (url, params = {}) => {
+        const request = async (url = '', params = {}) => {
             const builder = new URL(url, location.origin);
             Object.entries(params).forEach(([k, v]) => builder.searchParams.set(k, v));
-            await fetch(builder.toString());
+            const data = await fetch(builder.toString());
+            const json = await data.json();
+            return json;
         };
 
-        const currentStream = await navigator.mediaDevices.getUserMedia({ video: { 
-            facingMode: 'user',
-            width: { min: 0, max: window.screen.width },
-            height: { min: 0, max: window.screen.height },
-        }});
-
-        createVideo(currentStream);
+        const currentStream = await navigator.mediaDevices.getUserMedia({
+            video: { 
+                facingMode: 'user',
+                width: {
+                    min: 0,
+                    max: window.screen.width,
+                },
+                height: {
+                    min: 0,
+                    max: window.screen.height,
+                },
+            },
+        });
 
         const currentUserId = await request('api/join-room');
+        console.log(`Joined as user_${currentUserId}`);
+        createVideo(currentStream);
 
-        console.log(`Joined as user-${currentUserId}`);
-
-        const process = async () => {
-            while (true) {
-                //
-                await sleep();
-            }
+        const createConnection = (toUserId = -1, initiator = false) => {
+            const p2p = new PeerToPeer({
+                mediaStream: currentStream,
+                fromUserId: currentUserId,
+                initiator,
+                toUserId,
+            });
+            peerHub.set(toUserId, p2p);
         };
 
-        process();
+        const userList = await request('api/user-list');
+        const targetList = userList.filter((id) => id !== currentUserId);
+        targetList.forEach((toUserId) => createConnection(toUserId, true));
 
     })();
 </script>
