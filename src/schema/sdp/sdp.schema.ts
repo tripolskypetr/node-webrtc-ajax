@@ -1,4 +1,4 @@
-import { Column, Entity, Index } from "typeorm";
+import { Column, Entity, Index, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
 import { SdpType } from "./sdp-type.enum";
 
@@ -15,13 +15,17 @@ import { SdpType } from "./sdp-type.enum";
 @Entity('sdp')
 export class SessionDescriptionProtocol {
 
+  @PrimaryGeneratedColumn()
+  id: number; // required by TypeORM
+
+
   @Column({
-    type: "number",
+    type: "int",
   })
   roomId: number;
 
   @Column({
-    type: "number",
+    type: "int",
   })
   fromUserId: number;
 
@@ -30,7 +34,7 @@ export class SessionDescriptionProtocol {
    * @description null
    */
   @Column({
-    type: "number",
+    type: "int",
     nullable: true,
   })
   toUserId: number | null;
@@ -44,14 +48,14 @@ export class SessionDescriptionProtocol {
   type: string | null;
 
   @Column({
-    type: "string",
+    type: "text",
     nullable: true,
   })
   sdp: string | null;
 
 
   @Column({
-    type: "boolean",
+    type: "bool",
   })
   recieved: boolean;
 

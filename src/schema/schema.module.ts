@@ -21,6 +21,6 @@ import { InformationConnectivityEstablishment as Ice } from './ice/ice.schema';
   exports: [
     SdpService,
     IceService,
-  ]
+  ],
 })
 export class SchemaModule { }
