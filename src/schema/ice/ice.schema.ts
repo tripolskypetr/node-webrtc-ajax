@@ -1,7 +1,5 @@
 import { Column, Entity, Index } from "typeorm";
 
-import { SdpType } from "./sdp-type.enum";
-
 @Index([
   'roomId',
   'fromUserId',
@@ -9,8 +7,8 @@ import { SdpType } from "./sdp-type.enum";
 ], {
   unique: true,
 })
-@Entity('sdp')
-export class SessionDescriptionProtocol {
+@Entity('ice')
+export class InformationConnectivityEstablishment {
 
   @Column({
     type: "number",
@@ -29,16 +27,28 @@ export class SessionDescriptionProtocol {
 
 
   @Column({
-    type: "enum",
-    enum: SdpType,
+    type: "string",
     nullable: true,
   })
-  type: string;
+  candidate: string;
 
   @Column({
     type: "string",
+    nullable: true,
   })
-  sdp: string;
+  sdpMid: string;
+
+  @Column({
+    type: "string",
+    nullable: true,
+  })
+  sdpMLineIndex: string;
+
+  @Column({
+    type: "string",
+    nullable: true,
+  })
+  usernameFragment: string;
 
 
   @Column({
