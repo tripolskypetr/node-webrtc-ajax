@@ -10,7 +10,7 @@ class EventEmitter {
             });
         }
     };
-    subscribe(eventName, fn) {
+    on(eventName, fn) {
         if (!this.events[eventName]) {
             this.events[eventName] = [];
         }
@@ -28,12 +28,13 @@ class PeerToPeer extends EventEmitter {
         fromUserId = -1,
         toUserId = -1,
     }) {
+        super();
         this.connection = new RTCPeerConnection(/* ICE_SERVERS TURN */);
         this.connection.onicecandidate = (event) => {
             const { candidate: ice } = event;
             if (ice) {
                 this.emit('ice', {
-                    ice,
+                    ice: JSON.stringify(ice.toJSON()),
                     fromUserId,
                     toUserId,
                 });
@@ -55,7 +56,7 @@ class PeerToPeer extends EventEmitter {
                 .then((sdp) => {
                     this.connection.setLocalDescription(sdp);
                     this.emit('sdp', {
-                        sdp,
+                        sdp: JSON.stringify(sdp.toJSON()),
                         fromUserId,
                         toUserId,
                     });

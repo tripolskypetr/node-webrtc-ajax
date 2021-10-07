@@ -48,6 +48,7 @@ export class AppService {
             fromUserId: currentUserId,
             toUserId,
             roomId,
+            recieved: false,
         });
     };
 
@@ -57,6 +58,7 @@ export class AppService {
             fromUserId: currentUserId,
             toUserId,
             roomId,
+            recieved: false,
         });
     };
 }

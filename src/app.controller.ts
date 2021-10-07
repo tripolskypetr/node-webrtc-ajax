@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 
 import { AppService } from './app.service';
 
@@ -20,32 +20,32 @@ export class AppController {
     };
 
     @Get('read-sdp')
-    readSdp(@Param('currentUserId') currentUserId: number) {
+    readSdp(@Query('currentUserId') currentUserId: number) {
         return this.appService.readPendingSdp(currentUserId);
     };
 
     @Get('read-ice')
-    readIce(@Param('currentUserId') currentUserId: number) {
+    readIce(@Query('currentUserId') currentUserId: number) {
         return this.appService.readPendingIce(currentUserId);
     };
 
     @Get('mark-sdp')
-    markSdp(@Param('currentUserId') currentUserId: number, @Param('fromUserId') fromUserId: number) {
+    markSdp(@Query('currentUserId') currentUserId: number, @Query('fromUserId') fromUserId: number) {
         return this.appService.markSdp(currentUserId, fromUserId);
     };
 
     @Get('mark-ice')
-    markIce(@Param('currentUserId') currentUserId: number, @Param('fromUserId') fromUserId: number) {
+    markIce(@Query('currentUserId') currentUserId: number, @Query('fromUserId') fromUserId: number) {
         return this.appService.markIce(currentUserId, fromUserId);
     };
 
     @Get('create-sdp')
-    createSdp(@Param('currentUserId') currentUserId: number, @Param('toUserId') toUserId: number, data: string) {
-        return this.appService.createSdp(currentUserId, toUserId, data);
+    createSdp(@Query('currentUserId') currentUserId: number, @Query('toUserId') toUserId: number, @Query('sdp') sdp: string) {
+        return this.appService.createSdp(currentUserId, toUserId, sdp);
     };
 
     @Get('create-ice')
-    createIce(@Param('currentUserId') currentUserId: number, @Param('toUserId') toUserId: number, data: string) {
-        return this.appService.createIce(currentUserId, toUserId, data);
+    createIce(@Query('currentUserId') currentUserId: number, @Query('toUserId') toUserId: number, @Query('ice') ice: string) {
+        return this.appService.createIce(currentUserId, toUserId, ice);
     };
 }

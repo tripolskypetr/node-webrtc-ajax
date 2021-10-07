@@ -48,12 +48,35 @@
                 initiator,
                 toUserId,
             });
+            p2p.on('stream', ({ stream }) => createVideo(stream));
+            p2p.on('sdp', ({ sdp, toUserId }) => request('api/create-sdp', {
+                currentUserId,
+                toUserId,
+                sdp,
+            }));
+            p2p.on('ice', ({ ice, toUserId }) => request('api/create-ice', {
+                currentUserId,
+                toUserId,
+                ice,
+            }));
             peerHub.set(toUserId, p2p);
         };
 
         const userList = await request('api/user-list');
         const targetList = userList.filter((id) => id !== currentUserId);
         targetList.forEach((toUserId) => createConnection(toUserId, true));
+
+        const browseForIncomingSdp = async () => {
+            const sdpList = await request('api/read-sdp', {
+                currentUserId,
+            });
+            console.log(sdpList);
+        };
+
+        do {
+            await browseForIncomingSdp();
+            await sleep(10_000);
+        } while (true);
 
     })();
 </script>
