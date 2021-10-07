@@ -1,13 +1,11 @@
 <span></span>
 <div id="root"></div>
-<button>tick</button>
 <script src="./peer-to-peer.js"></script>
 <script>
     (async function(global) {
 
         const root = document.querySelector('#root');
         const span = document.querySelector('span');
-        const button = document.querySelector('button');
         const peerHub = new Map();
 
         global.peerHub = peerHub;
@@ -122,10 +120,17 @@
             }));
         };
 
-        button.addEventListener('click', async () => {
+        const tick = async () => {
             await browseForIncomingSdp();
             await browseForIncomingIce();
-        });
+        };
+
+        do {
+            await tick();
+            await sleep(5_000);
+        } while (true);
+
+        // button.addEventListener('click', tick);
 
     })(window);
 </script>
