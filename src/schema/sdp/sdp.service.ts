@@ -31,7 +31,7 @@ export class SdpService {
         return target;
     };
 
-    async create(sdp: Sdp): Promise<Sdp> {
+    async create(sdp: Partial<Sdp>): Promise<Sdp> {
         const target = this.sdpRepository.create(sdp);
         return this.sdpRepository.save(target);
     };

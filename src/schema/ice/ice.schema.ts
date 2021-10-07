@@ -47,31 +47,10 @@ export class InformationConnectivityEstablishment {
   })
   timestamp: number;
 
-
   @Column({
     type: "text",
-    nullable: true,
   })
-  candidate: string | null;
-
-  @Column({
-    type: "text",
-    nullable: true,
-  })
-  sdpMid: string | null;
-
-  @Column({
-    type: "int",
-    nullable: true,
-  })
-  sdpMLineIndex: number | null;
-
-  @Column({
-    type: "text",
-    nullable: true,
-  })
-  usernameFragment: string | null;
-
+  ice: string;
 
   @Column({
     type: "bool",

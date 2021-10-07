@@ -47,9 +47,9 @@ export class AppService implements OnModuleInit {
         return this.iceService.mark(roomId, fromUserId, currentUserId);
     };
 
-    createIce(currentUserId: number, toUserId: number, data: string, roomId = 1) {
+    createIce(currentUserId: number, toUserId: number, ice: string, roomId = 1) {
         return this.iceService.create({
-            ...JSON.parse(data),
+            ice,
             fromUserId: currentUserId,
             toUserId,
             roomId,
@@ -58,9 +58,9 @@ export class AppService implements OnModuleInit {
         });
     };
 
-    createSdp(currentUserId: number, toUserId: number, data: string, roomId = 1) {
+    createSdp(currentUserId: number, toUserId: number, sdp: string, roomId = 1) {
         return this.sdpService.create({
-            ...JSON.parse(data),
+            sdp,
             fromUserId: currentUserId,
             toUserId,
             roomId,

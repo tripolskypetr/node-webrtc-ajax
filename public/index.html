@@ -1,10 +1,16 @@
+<span></span>
 <div id="root"></div>
+<button>tick</button>
 <script src="./peer-to-peer.js"></script>
 <script>
-    (async function() {
+    (async function(global) {
 
         const root = document.querySelector('#root');
+        const span = document.querySelector('span');
+        const button = document.querySelector('button');
         const peerHub = new Map();
+
+        global.peerHub = peerHub;
 
         const sleep = (timeout = 1000) => new Promise((res) => setTimeout(() => res(), timeout));
 
@@ -38,7 +44,7 @@
         });
 
         const currentUserId = await request('api/join-room');
-        console.log(`Joined as user_${currentUserId}`);
+        span.innerText = `Joined as user_${currentUserId}`;
         createVideo(currentStream);
 
         const createConnection = (toUserId = -1, initiator = false) => {
@@ -50,7 +56,7 @@
             });
             p2p.on('stream', ({ stream }) => createVideo(stream));
             p2p.on('sdp', ({ sdp, toUserId }) => {
-                console.log(`Outgoing sdp ${toUserId} ${Date.now()}`);
+                console.log(`Outgoing sdp ${toUserId} ${Date.now()}`, { sdp });
                 request('api/create-sdp', {
                     currentUserId,
                     toUserId,
@@ -58,7 +64,7 @@
                 });
             });
             p2p.on('ice', ({ ice, toUserId }) => {
-                console.log(`Outgoing ice ${toUserId} ${Date.now()}`);
+                console.log(`Outgoing ice ${toUserId} ${Date.now()}`, { ice });
                 request('api/create-ice', {
                     currentUserId,
                     toUserId,
@@ -80,15 +86,20 @@
             console.log({sdpList});
             await Promise.all(sdpList.map(async ({
                 fromUserId,
-                ...sdp
+                sdp,
             }) => {
                 await request('api/mark-sdp', {
                     currentUserId,
                     fromUserId,
                 });
-                console.log(`Incoming sdp ${fromUserId} ${Date.now()}`);
-                const p2p = createConnection(fromUserId, false);
-                p2p.setRemoteSdp(sdp);
+                if (peerHub.has(fromUserId)) {
+                    const p2p = peerHub.get(fromUserId);
+                    p2p.setRemoteSdp(sdp);
+                } else {
+                    console.log(`Incoming offer sdp ${fromUserId} ${Date.now()}`, { sdp });
+                    const p2p = createConnection(fromUserId, false);
+                    p2p.setRemoteSdp(sdp);
+                }
             }));
         };
 
@@ -99,23 +110,22 @@
             console.log({iceList});
             await Promise.all(iceList.map(async ({
                 fromUserId,
-                ...ice
+                ice,
             }) => {
                 await request('api/mark-ice', {
                     currentUserId,
                     fromUserId,
                 });
-                console.log(`Incoming ice ${fromUserId} ${Date.now()}`);
+                console.log(`Incoming ice ${fromUserId} ${Date.now()}`, { ice });
                 const p2p = peerHub.get(fromUserId);
                 p2p.setRemoteIce(ice);
             }));
         };
 
-        do {
+        button.addEventListener('click', async () => {
             await browseForIncomingSdp();
             await browseForIncomingIce();
-            await sleep(10_000);
-        } while (true);
+        });
 
-    })();
+    })(window);
 </script>

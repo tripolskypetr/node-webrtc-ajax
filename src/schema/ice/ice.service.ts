@@ -31,7 +31,7 @@ export class IceService {
         return target;
     };
 
-    async create(sdp: Ice): Promise<Ice> {
+    async create(sdp: Partial<Ice>): Promise<Ice> {
         const target = this.iceRepository.create(sdp);
         return this.iceRepository.save(target);
     };

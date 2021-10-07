@@ -31,17 +31,18 @@ class PeerToPeer extends EventEmitter {
         super();
         this.fromUserId = fromUserId;
         this.toUserId = toUserId;
-        this.connection = new RTCPeerConnection(/* ICE_SERVERS TURN */);
-        this.connection.onicecandidate = (event) => {
+        this.initiator = initiator;
+        this.connection = new RTCPeerConnection({url:"stun:stun.l.google.com:19302"});
+        this.connection.addEventListener('icecandidate', (event) => {
             const { candidate: ice } = event;
-            if (ice) {
+            /*if (ice) {
                 this.emit('ice', {
                     ice: JSON.stringify(ice.toJSON()),
                     fromUserId,
                     toUserId,
                 });
-            }
-        };
+            }*/
+        });
         this.connection.onaddstream = (event) => {
             const { stream: remoteStream } = event;
             if (remoteStream) {
@@ -54,6 +55,7 @@ class PeerToPeer extends EventEmitter {
         };
         this.connection.addStream(mediaStream);
         if (initiator) {
+            console.log('offer')
             this.connection.createOffer()
                 .then((sdp) => this.handleSdp(sdp))
                 .catch((err) => {
@@ -62,26 +64,35 @@ class PeerToPeer extends EventEmitter {
                 });
         }
     };
-    handleSdp = (sdp) => {
-        this.connection.setLocalDescription(sdp);
+    handleSdp = async (sdp) => {
+        await this.connection.setLocalDescription(sdp);
         this.emit('sdp', {
             sdp: JSON.stringify(sdp.toJSON()),
             fromUserId: this.fromUserId,
             toUserId: this.toUserId,
         });
     };
-    setRemoteSdp = async (sdp) => {
-        const desc = new RTCSessionDescription(sdp);
+    setRemoteSdp = async (sdp = '') => {
+        const desc = new RTCSessionDescription(JSON.parse(sdp));
+        console.log(desc);
         await this.connection.setRemoteDescription(desc);
-        this.connection.createAnswer()
-            .then((sdp) => this.handleSdp(sdp))
-            .catch((err) => {
-                console.error(err);
-                throw new Error('peer-to-peer answer failed');
-            });
+        if (!this.initiator) {
+            console.log('answer')
+            await this.connection.createAnswer()
+                .then((sdp) => this.handleSdp(sdp))
+                .catch((err) => {
+                    console.error(err);
+                    throw new Error('peer-to-peer answer failed');
+                });
+        }
     };
-    setRemoteIce = (ice) => {
-        const desc = new RTCIceCandidate(ice);
+    /*setLocalSdp = async (sdp = '') => {
+        const desc = new RTCSessionDescription(JSON.parse(sdp));
+        this.connection.setLocalDescription(desc);
+    };*/
+    setRemoteIce = (ice = '') => {
+        const desc = new RTCIceCandidate(JSON.parse(ice));
+        console.log(desc);
         return this.connection.addIceCandidate(desc);
     };
 };

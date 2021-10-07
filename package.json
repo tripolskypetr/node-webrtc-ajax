@@ -36,6 +36,7 @@
     "class-validator": "^0.13.1",
     "dotenv": "^10.0.0",
     "fastify-static": "^4.4.0",
+    "kurento-utils": "^6.16.0",
     "nestjs-paginate": "^2.1.4",
     "pg": "^8.7.1",
     "reflect-metadata": "^0.1.13",

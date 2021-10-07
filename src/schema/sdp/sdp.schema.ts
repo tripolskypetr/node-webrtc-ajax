@@ -49,20 +49,10 @@ export class SessionDescriptionProtocol {
   })
   timestamp: number;
 
-
-  @Column({
-    type: "enum",
-    enum: SdpType,
-    nullable: true,
-  })
-  type: string | null;
-
   @Column({
     type: "text",
-    nullable: true,
   })
-  sdp: string | null;
-
+  sdp: string;
 
   @Column({
     type: "bool",
