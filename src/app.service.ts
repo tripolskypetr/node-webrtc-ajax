@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 
 import { IceService } from './schema/ice/ice.service';
 import { SdpService } from './schema/sdp/sdp.service';
@@ -7,7 +7,7 @@ import { SdpService } from './schema/sdp/sdp.service';
  * @todo check currentUserId
  */
 @Injectable()
-export class AppService {
+export class AppService implements OnModuleInit {
 
     userIds: number[] = [];
 
@@ -25,6 +25,11 @@ export class AppService {
         readonly iceService: IceService,
         readonly sdpService: SdpService,
     ) { }
+
+    async onModuleInit() {
+        await this.iceService.cleanAll();
+        await this.sdpService.cleanAll();
+    }
 
     readPendingSdp(currentUserId: number, roomId = 1) {
         return this.sdpService.readPending(roomId, currentUserId);
@@ -49,6 +54,7 @@ export class AppService {
             toUserId,
             roomId,
             recieved: false,
+            timestamp: Date.now(),
         });
     };
 
@@ -59,6 +65,7 @@ export class AppService {
             toUserId,
             roomId,
             recieved: false,
+            timestamp: Date.now(),
         });
     };
 }

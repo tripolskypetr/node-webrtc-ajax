@@ -7,6 +7,7 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
   'roomId',
   'fromUserId',
   'toUserId',
+  'timestamp',
 ], {
   unique: true,
 })
@@ -36,6 +37,11 @@ export class InformationConnectivityEstablishment {
     nullable: true,
   })
   toUserId: number | null;
+
+  @Column({
+    type: "bigint",
+  })
+  timestamp: number;
 
 
   @Column({

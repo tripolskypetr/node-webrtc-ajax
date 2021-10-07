@@ -8,16 +8,16 @@ import { SessionDescriptionProtocol as Sdp } from './sdp.schema';
 export class SdpService {
 
     constructor(
-        @InjectRepository(Sdp) private iceRepository: Repository<Sdp>,
+        @InjectRepository(Sdp) private sdpRepository: Repository<Sdp>,
     ) { }
 
     async create(sdp: Sdp): Promise<Sdp> {
-        const target = this.iceRepository.create(sdp);
-        return this.iceRepository.save(target);
+        const target = this.sdpRepository.create(sdp);
+        return this.sdpRepository.save(target);
     };
 
     async readPending(roomId: number, toUserId: number): Promise<Sdp[]> {
-        const target = await this.iceRepository.find({
+        const target = await this.sdpRepository.find({
             roomId,
             toUserId,
             recieved: false,
@@ -26,13 +26,23 @@ export class SdpService {
     };
 
     async mark(roomId: number, fromUserId: number, toUserId: number): Promise<Sdp> {
-        const target = await this.iceRepository.preload({
+        const target = await this.sdpRepository.preload({
             recieved: true,
             roomId,
             fromUserId,
             toUserId,
         });
         return target;
+    };
+
+
+    async cleanAll() {
+        /*try {
+            await this.sdpRepository.query(`TRUNCATE TABLE \`sdp\`;`);
+        } catch (err) {
+            console.log(`sdp.service cleanAll truncate failure`);
+            throw err;
+        }*/
     };
 
 };

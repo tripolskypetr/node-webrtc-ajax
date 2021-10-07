@@ -9,6 +9,7 @@ import { SdpType } from "./sdp-type.enum";
   'roomId',
   'fromUserId',
   'toUserId',
+  'timestamp',
 ], {
   unique: true,
 })
@@ -38,6 +39,11 @@ export class SessionDescriptionProtocol {
     nullable: true,
   })
   toUserId: number | null;
+
+  @Column({
+    type: "bigint",
+  })
+  timestamp: number;
 
 
   @Column({

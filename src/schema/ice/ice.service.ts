@@ -35,4 +35,13 @@ export class IceService {
         return target;
     };
 
+    async cleanAll() {
+        /*try {
+            await this.iceRepository.query(`TRUNCATE TABLE \`ice\`;`);
+        } catch (err) {
+            console.log(`ice.service cleanAll truncate failure`);
+            throw err;
+        }*/
+    };
+
 };
