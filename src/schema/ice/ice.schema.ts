@@ -2,6 +2,7 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
 
 /**
  * @see https://developer.mozilla.org/en-US/docs/Web/API/RTCIceCandidate/toJSON
+ * @description Генерируется на каждый вариант подключения, тоесть, много
  */
 @Index([
   'roomId',

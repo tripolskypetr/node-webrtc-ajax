@@ -1,9 +1,10 @@
 import { Column, Entity, Index, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
-import { SdpType } from "./sdp-type.enum";
+// import { SdpType } from "./sdp-type.enum";
 
 /**
  * @see https://developer.mozilla.org/en-US/docs/Web/API/RTCSessionDescription/toJSON
+ * @description Вроде бы, генерируется ровно две штуки: type: offer и type: answer
  */
 @Index([
   'roomId',
