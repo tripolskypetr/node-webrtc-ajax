@@ -11,6 +11,26 @@ export class SdpService {
         @InjectRepository(Sdp) private sdpRepository: Repository<Sdp>,
     ) { }
 
+    /**
+     * @description TypeORM has not support of multiple key index 
+     * @todo refactor
+     */
+    async findOne(roomId: number, fromUserId: number, toUserId: number,) {
+        const other = await this.sdpRepository.find({
+            roomId,
+            fromUserId,
+            toUserId,
+        });
+        const timestamp = await Math.max(...other.map(({timestamp}) => timestamp), -1);
+        const target = await this.sdpRepository.findOne({
+            roomId,
+            fromUserId,
+            toUserId,
+            timestamp,
+        });
+        return target;
+    };
+
     async create(sdp: Sdp): Promise<Sdp> {
         const target = this.sdpRepository.create(sdp);
         return this.sdpRepository.save(target);
@@ -26,23 +46,21 @@ export class SdpService {
     };
 
     async mark(roomId: number, fromUserId: number, toUserId: number): Promise<Sdp> {
-        const target = await this.sdpRepository.preload({
-            recieved: true,
-            roomId,
-            fromUserId,
-            toUserId,
-        });
+        const target = await this.findOne(roomId, fromUserId, toUserId);
+        target.recieved = true;
+        this.sdpRepository.save(target);
         return target;
     };
 
 
     async cleanAll() {
-        /*try {
-            await this.sdpRepository.query(`TRUNCATE TABLE \`sdp\`;`);
+        try {
+            const all = await this.sdpRepository.find({});
+            await Promise.all(all.map((target) => this.sdpRepository.delete(target)));
         } catch (err) {
             console.log(`sdp.service cleanAll truncate failure`);
             throw err;
-        }*/
+        }
     };
 
 };

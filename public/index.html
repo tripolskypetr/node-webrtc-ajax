@@ -49,17 +49,24 @@
                 toUserId,
             });
             p2p.on('stream', ({ stream }) => createVideo(stream));
-            p2p.on('sdp', ({ sdp, toUserId }) => request('api/create-sdp', {
-                currentUserId,
-                toUserId,
-                sdp,
-            }));
-            p2p.on('ice', ({ ice, toUserId }) => request('api/create-ice', {
-                currentUserId,
-                toUserId,
-                ice,
-            }));
+            p2p.on('sdp', ({ sdp, toUserId }) => {
+                console.log(`Outgoing sdp ${toUserId} ${Date.now()}`);
+                request('api/create-sdp', {
+                    currentUserId,
+                    toUserId,
+                    sdp,
+                });
+            });
+            p2p.on('ice', ({ ice, toUserId }) => {
+                console.log(`Outgoing ice ${toUserId} ${Date.now()}`);
+                request('api/create-ice', {
+                    currentUserId,
+                    toUserId,
+                    ice,
+                });
+            });
             peerHub.set(toUserId, p2p);
+            return p2p;
         };
 
         const userList = await request('api/user-list');
@@ -70,11 +77,43 @@
             const sdpList = await request('api/read-sdp', {
                 currentUserId,
             });
-            console.log(sdpList);
+            console.log({sdpList});
+            await Promise.all(sdpList.map(async ({
+                fromUserId,
+                ...sdp
+            }) => {
+                await request('api/mark-sdp', {
+                    currentUserId,
+                    fromUserId,
+                });
+                console.log(`Incoming sdp ${fromUserId} ${Date.now()}`);
+                const p2p = createConnection(fromUserId, false);
+                p2p.setRemoteSdp(sdp);
+            }));
+        };
+
+        const browseForIncomingIce = async () => {
+            const iceList = await request('api/read-ice', {
+                currentUserId
+            });
+            console.log({iceList});
+            await Promise.all(iceList.map(async ({
+                fromUserId,
+                ...ice
+            }) => {
+                await request('api/mark-ice', {
+                    currentUserId,
+                    fromUserId,
+                });
+                console.log(`Incoming ice ${fromUserId} ${Date.now()}`);
+                const p2p = peerHub.get(fromUserId);
+                p2p.setRemoteIce(ice);
+            }));
         };
 
         do {
             await browseForIncomingSdp();
+            await browseForIncomingIce();
             await sleep(10_000);
         } while (true);
 

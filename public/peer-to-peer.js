@@ -29,6 +29,8 @@ class PeerToPeer extends EventEmitter {
         toUserId = -1,
     }) {
         super();
+        this.fromUserId = fromUserId;
+        this.toUserId = toUserId;
         this.connection = new RTCPeerConnection(/* ICE_SERVERS TURN */);
         this.connection.onicecandidate = (event) => {
             const { candidate: ice } = event;
@@ -40,7 +42,7 @@ class PeerToPeer extends EventEmitter {
                 });
             }
         };
-        this.connection.onaddstream = function (event) {
+        this.connection.onaddstream = (event) => {
             const { stream: remoteStream } = event;
             if (remoteStream) {
                 this.emit('stream', {
@@ -53,23 +55,30 @@ class PeerToPeer extends EventEmitter {
         this.connection.addStream(mediaStream);
         if (initiator) {
             this.connection.createOffer()
-                .then((sdp) => {
-                    this.connection.setLocalDescription(sdp);
-                    this.emit('sdp', {
-                        sdp: JSON.stringify(sdp.toJSON()),
-                        fromUserId,
-                        toUserId,
-                    });
-                })
+                .then((sdp) => this.handleSdp(sdp))
                 .catch((err) => {
                     console.error(err);
-                    throw new Error('peer-to-peer failed');
+                    throw new Error('peer-to-peer offer failed');
                 });
         }
     };
-    setRemoteSdp = (sdp) => {
+    handleSdp = (sdp) => {
+        this.connection.setLocalDescription(sdp);
+        this.emit('sdp', {
+            sdp: JSON.stringify(sdp.toJSON()),
+            fromUserId: this.fromUserId,
+            toUserId: this.toUserId,
+        });
+    };
+    setRemoteSdp = async (sdp) => {
         const desc = new RTCSessionDescription(sdp);
-        return this.connection.setRemoteDescription(desc);
+        await this.connection.setRemoteDescription(desc);
+        this.connection.createAnswer()
+            .then((sdp) => this.handleSdp(sdp))
+            .catch((err) => {
+                console.error(err);
+                throw new Error('peer-to-peer answer failed');
+            });
     };
     setRemoteIce = (ice) => {
         const desc = new RTCIceCandidate(ice);

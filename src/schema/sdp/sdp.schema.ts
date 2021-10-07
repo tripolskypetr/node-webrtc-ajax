@@ -40,6 +40,10 @@ export class SessionDescriptionProtocol {
   })
   toUserId: number | null;
 
+  /**
+   * @deprecated
+   * @see roomId
+   */
   @Column({
     type: "bigint",
   })
