@@ -91,6 +91,7 @@
                     fromUserId,
                 });
                 if (peerHub.has(fromUserId)) {
+                    console.log(`Incoming answer sdp ${fromUserId} ${Date.now()}`, { sdp });
                     const p2p = peerHub.get(fromUserId);
                     p2p.setRemoteSdp(sdp);
                 } else {
