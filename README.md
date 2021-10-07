@@ -10,4 +10,5 @@
 nano .env
 npm install
 npm run start:dev
+npx open-cli http://localhost:3000/
 ```
