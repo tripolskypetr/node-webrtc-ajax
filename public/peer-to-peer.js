@@ -35,13 +35,13 @@ class PeerToPeer extends EventEmitter {
         this.connection = new RTCPeerConnection({url:"stun:stun.l.google.com:19302"});
         this.connection.addEventListener('icecandidate', (event) => {
             const { candidate: ice } = event;
-            /*if (ice) {
+            if (ice) {
                 this.emit('ice', {
                     ice: JSON.stringify(ice.toJSON()),
                     fromUserId,
                     toUserId,
                 });
-            }*/
+            }
         });
         this.connection.onaddstream = (event) => {
             const { stream: remoteStream } = event;
